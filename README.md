@@ -1,6 +1,6 @@
 # Проект
 
-MyWalletApp
+MyWalletPrime
 
 ## Описание
 
@@ -13,8 +13,8 @@ MyWalletApp
 - **Сборщик**: Vite
 - **Стилизация**: Tailwind CSS
 - **Бэкенд-сервис**: Firebase
-- **UI-компоненты**: [shadcn-vue](https://primevue.org/)
-- **Иконки**: [Lucide Icons](https://lucide.dev/icons/) и [Prime icons] (https://primevue.org/icons/)
+- **UI-компоненты**: [Primevue](https://primevue.org/)
+- **Иконки**: [Lucide Icons](https://lucide.dev/icons/) и [Prime icons](https://primevue.org/icons/)
 
 ## Настройка окружения
 
