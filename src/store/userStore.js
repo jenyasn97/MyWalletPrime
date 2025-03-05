@@ -2,7 +2,7 @@ import axiosApiInstanse from "../../api";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import useAuthStore from "./auth";
-import axios from "axios";
+import useAlertsStore from "./alertsStore";
 
 export const useUserStore = defineStore("user", () => {
   const userInRealDb = ref({
@@ -11,6 +11,7 @@ export const useUserStore = defineStore("user", () => {
     img: "",
     userId: "",
   });
+  const alertsStore = useAlertsStore();
 
   async function getUserInRealDbtime() {
     const authStore = useAuthStore();
@@ -32,8 +33,11 @@ export const useUserStore = defineStore("user", () => {
           };
         }
       }
-      console.log(userInRealDb.value);
     } catch (error) {
+      alertsStore.alertInfo = {
+        message: error.message,
+        statusCode: error.status,
+      };
       console.log(error);
     }
   }

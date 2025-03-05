@@ -7,7 +7,7 @@
           v-bind="props.action"
           @click="
             () => {
-              showLog(props);
+              showLog(item);
             }
           "
         >
@@ -61,18 +61,20 @@
       </template>
     </Menubar>
   </div>
+  <Toast />
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { Menubar, Avatar, InputText, Popover, Button } from "primevue";
+import { onMounted, onUnmounted, ref } from "vue";
+import { Menubar, Avatar, InputText, Popover, Button, Toast } from "primevue";
+import { useToast } from "primevue/usetoast";
+
 import useUserStore from "@/store/userStore";
+import useAlertsStore from "@/store/alertsStore";
 
 const userStore = useUserStore();
-
-function showLog(item) {
-  console.log(item);
-}
+const toast = useToast();
+const alertsStore = useAlertsStore();
 
 const items = ref([
   {
@@ -97,6 +99,9 @@ const items = ref([
   },
 ]);
 
+function showLog(item) {
+  console.log(item);
+}
 const op = ref();
 const selectedMember = ref(null);
 const members = ref([
@@ -125,7 +130,9 @@ function logOut() {
   location.reload();
 }
 
-userStore.getUserInRealDbtime();
+onMounted(() => {
+  userStore.getUserInRealDbtime();
+});
 </script>
 
 <style scoped></style>

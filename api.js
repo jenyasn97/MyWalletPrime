@@ -7,17 +7,31 @@ import useAlertsStore from "@/store/alertsStore";
 const axiosApiInstanse = axios.create();
 const apiKey = import.meta.env.VITE_API_KEY;
 
-axiosApiInstanse.interceptors.request.use((config) => {
-  const url = config.url;
-  if (!url.includes("signInWithPassword") && !url.includes("signUp")) {
-    const authStore = useAuthStore();
-    let params = new URLSearchParams();
-    params.append("auth", getCookie("Wallet-Access-Token"));
-    authStore.userTokenData = JSON.parse(localStorage.getItem("userTokenData"));
-    config.params = params;
-  }
-  return config;
-});
+axiosApiInstanse.interceptors.request.use(
+  (config) => {
+    const url = config.url;
+    if (!url.includes("signInWithPassword") && !url.includes("signUp")) {
+      const authStore = useAuthStore();
+      let userTokenData = localStorage.getItem("userTokenData");
+
+      if (userTokenData) {
+        authStore.userTokenData = JSON.parse(userTokenData);
+      }
+
+      let params = new URLSearchParams();
+      const token = getCookie("Wallet-Access-Token");
+      if (token) {
+        params.append("auth", token);
+      }
+
+      config.params = params;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  },
+);
 
 axiosApiInstanse.interceptors.response.use(
   (response) => {
@@ -32,32 +46,49 @@ axiosApiInstanse.interceptors.response.use(
     const authStore = useAuthStore();
     const alertsStore = useAlertsStore();
     const originalRequest = error.config;
-    if (error.response.status === 401 && !originalRequest._retry) {
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       try {
+        const refreshToken = getCookie("Wallet-Refresh-Token");
+        if (!refreshToken) throw new Error("No refresh token available");
+
         const newTokens = await axios.post(
-          `https://securetoken.googleapis.com/v1/token?key=${apiKey} `,
+          `https://securetoken.googleapis.com/v1/token?key=${apiKey}`,
           {
             grant_type: "refresh_token",
-            refresh_token: getCookie("Wallet-Refresh-Token"),
+            refresh_token: refreshToken,
           },
         );
+
         authStore.userTokenData.idToken = newTokens.data.access_token;
         authStore.userTokenData.refreshToken = newTokens.data.refresh_token;
+
         document.cookie = `Wallet-Access-Token=${newTokens.data.access_token}; secure`;
         document.cookie = `Wallet-Refresh-Token=${newTokens.data.refresh_token}; secure`;
+
+        return axiosApiInstanse(originalRequest);
       } catch (err) {
         document.cookie = "Wallet-Access-Token=; Max-Age=-1;";
         document.cookie = "Wallet-Refresh-Token=; Max-Age=-1;";
-        authStore.userTokenData.idToken = "";
-        authStore.userTokenData.refreshToken = "";
+
+        authStore.userTokenData = {
+          idToken: "",
+          localId: "",
+          refreshToken: "",
+        };
+        localStorage.removeItem("userTokenData");
+
         router.push("/login");
       }
     }
+
     alertsStore.alertInfo = {
-      message: error.response.data.error.message,
-      statusCode: error.response.data.error.code,
+      message: error.response?.data?.error?.message || "Unknown error",
+      statusCode: error.response?.status || 500,
     };
+
+    return Promise.reject(error);
   },
 );
 
