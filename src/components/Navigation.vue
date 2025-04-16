@@ -65,29 +65,39 @@
 </template>
 
 <script setup>
-import { onMounted, onUnmounted, ref } from "vue";
+import { onMounted, ref } from "vue";
 import { Menubar, Avatar, InputText, Popover, Button, Toast } from "primevue";
 import { useToast } from "primevue/usetoast";
 
 import useUserStore from "@/store/userStore";
 import useAlertsStore from "@/store/alertsStore";
+import router from "@/router";
 
 const userStore = useUserStore();
-const toast = useToast();
-const alertsStore = useAlertsStore();
+// const toast = useToast();
+// const alertsStore = useAlertsStore();
 
 const items = ref([
   {
     label: "Home",
     icon: "pi pi-home",
+    command: () => {
+      router.push("/");
+    },
   },
   {
     label: "Orders",
     icon: "pi pi-shopping-cart",
+    command: () => {
+      router.push("/orders");
+    },
   },
   {
     label: "Products",
     icon: "pi pi-box",
+    command: () => {
+      router.push("/products");
+    },
   },
   {
     label: "Customers",
@@ -102,6 +112,7 @@ const items = ref([
 function showLog(item) {
   console.log(item);
 }
+
 const op = ref();
 const selectedMember = ref(null);
 const members = ref([

@@ -44,7 +44,7 @@
           >Do you already have an account?</span
         >
         <RouterLink
-          to="/signin"
+          to="/login"
           class="text-primary ml-2 cursor-pointer font-medium no-underline"
           >Come in!</RouterLink
         >
@@ -184,7 +184,7 @@ async function register() {
     );
     alertsStore.showToastMessage(toast);
     setTimeout(() => {
-      router.push("/signin");
+      router.push("/login");
     }, 1000);
   } catch (e) {
     alertsStore.showToastMessage(toast);

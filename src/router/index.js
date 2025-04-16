@@ -6,26 +6,50 @@ const router = createRouter({
   routes: [
     {
       path: "/",
-      name: "dashBoard",
-      component: () => import("@/layouts/DashBoardLoyaut.vue"),
+      name: "home",
+      component: () => import("@/layouts/HomeLayout.vue"),
       meta: {
         auth: true,
       },
     },
     {
-      path: "/signin",
-      name: "signin",
-      component: () => import("@/layouts/LoginLoyaut.vue"),
+      path: "/orders",
+      name: "orders",
+      component: () => import("@/layouts/OrdersLayout.vue"),
+      meta: {
+        auth: true,
+      },
+    },
+    {
+      path: "/products",
+      name: "products",
+      component: () => import("@/layouts/ProductsLayout.vue"),
+      meta: {
+        auth: true,
+      },
+    },
+    {
+      path: "/login",
+      name: "login",
+      component: () => import("@/pages/LoginPage.vue"),
       meta: {
         auth: false,
       },
     },
     {
-      path: "/signup",
-      name: "signup",
-      component: () => import("@/layouts/RegisterLoyaut.vue"),
+      path: "/register",
+      name: "register",
+      component: () => import("@/pages/RegisterPage.vue"),
       meta: {
         auth: false,
+      },
+    },
+    {
+      path: "/:pathMatch(.*)*",
+      name: "404",
+      component: () => import("@/pages/NotFoundPage.vue"),
+      meta: {
+        auth: true,
       },
     },
   ],
@@ -33,9 +57,9 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   if (to.meta.auth && !getCookie("Wallet-Access-Token")) {
-    next({ name: "signin" });
+    next({ name: "login" });
   } else if (!to.meta.auth && getCookie("Wallet-Access-Token")) {
-    next({ name: "dashBoard" });
+    next({ name: "404" });
   } else {
     next();
   }

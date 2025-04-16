@@ -44,7 +44,7 @@
           >Don't have an account?</span
         >
         <RouterLink
-          to="/signup"
+          to="/register"
           class="text-primary ml-2 cursor-pointer font-medium no-underline"
           >Create today!</RouterLink
         >
